@@ -1,0 +1,7 @@
+# Base
+Flask==2.0.1
+Flask-RESTful==0.3.9
+
+
+# Deploy
+gunicorn==20.1.0
