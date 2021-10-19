@@ -9,9 +9,6 @@ from api.auth.views import LoginView, SignUpView
 from api.tasks.views import TasksView, TaskView
 from api.files.views import FilesView
 
-# Utils
-import os
-
 app = Flask(__name__)
 api = Api(app)
 
