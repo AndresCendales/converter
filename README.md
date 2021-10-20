@@ -1,11 +1,10 @@
-## Developmet
+## Local Development
 ```shell
 # Run app
-export FLASK_ENV=development 
-flask run
+ docker-compose -f local.yml up --build           
 ```
 
-
-## Test
-
-## Deploy
+## Deploy production
+```shell
+ docker-compose -f produccion.yml up --build           
+```
