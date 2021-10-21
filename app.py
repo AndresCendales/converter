@@ -13,7 +13,6 @@ from api.auth.views import LoginView, SignUpView
 from api.tasks.views import TasksView, TaskView
 from api.files.views import FilesView
 
-
 def create_app():
     """Initialize the core application."""
     app = Flask(__name__, instance_relative_config=False)

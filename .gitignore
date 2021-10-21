@@ -130,3 +130,7 @@ dmypy.json
 
 # Jetbrains config
 .idea*
+
+
+./logs/*.log
+local_notes.txt
