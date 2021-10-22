@@ -1,6 +1,7 @@
 # App
 from os import access
 from sqlalchemy.orm import query
+from api.notificator.notifier import Notifier
 from app import db
 
 # Flask
@@ -33,9 +34,11 @@ class LoginView(Resource):
 
     @jwt_required()
     def get(self):
-        user_id = get_jwt_identity()
+        username = get_jwt_identity()
 
-        return 'hola '+user_id, 200
+        notifier = Notifier()
+        notifier.send_notification_to_download(username, "/original-file-path.txt","pdf", "/new-file-path.pdf")
+        return 'hola '+username, 200
 
 class SignUpView(Resource):
     def post(self):
