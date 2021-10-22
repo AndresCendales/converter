@@ -2,7 +2,6 @@
 Flask==2.0.1
 Flask-RESTful==0.3.9
 flask_migrate==3.1.0
-Flask-JWT-Extended==4.2.3
 
 # ORM
 Flask-SQLAlchemy==2.5.1

@@ -26,8 +26,6 @@ def convert(original_filename, new_format):
     :param new_format: new format to convert the file
     :return:
     """
-    import time
-    time.sleep(10)
     logger.info('CeleryTasks', 'convert', 'Iniciando conversion...')
 
     new_filename = original_filename.rsplit('.', 1)[0] + "." + new_format
