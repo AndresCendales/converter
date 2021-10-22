@@ -1,6 +1,9 @@
 # App
 from app import db
 
+# config
+from config import ALLOWED_EXTENSIONS
+
 # Views
 from flask.views import MethodView
 from flask import request
@@ -11,6 +14,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 # Models
 from api.tasks.models import Task, TaskSchema
+from api.auth.models import User
 
 # Workers
 from api.tasks.worker import celery
@@ -53,12 +57,17 @@ class TasksView(MethodView):
         new_format = request.form.get('newFormat')
         if new_format is None:
             return {"message": "Por favor incluye el formato al que deseas convertir"}, 400
+        if new_format not in ALLOWED_EXTENSIONS:
+            return {"message": "newFormat invalido, Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
+
 
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), file.filename)
         file.save(filepath)
 
+        user = User.query.filter_by(username=get_jwt_identity()).first()
+
         new_task = Task(
-            # user_id=get_jwt_identity(),
+            user_id=user.id,
             status='uploaded',
             new_format=new_format,
             original_file_path=file.filename,
