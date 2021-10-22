@@ -62,7 +62,7 @@ class TasksView(MethodView):
 
 
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), file.filename)
-        file.save(filepath)
+        # file.save(filepath)
 
         user = User.query.filter_by(username=get_jwt_identity()).first()
 
@@ -75,11 +75,12 @@ class TasksView(MethodView):
             timestamp=datetime.utcnow()
         )
         db.session.add(new_task)
-        db.session.commit()
+        db.session.flush()
+        db.session.refresh(new_task)
 
         celery.send_task('tasks.convert', args=[file.filename, new_format], kwargs={})
 
-        return {"message": "tarea creada satisfactoriamente."}, 200
+        return {"message": "tarea creada satisfactoriamente.", "id_task": new_task.id}, 200
 
     @jwt_required()
     def get(self):
