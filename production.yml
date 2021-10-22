@@ -9,7 +9,7 @@ services:
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd@127.0.0.1:5432/converter
       - FLASK_ENV=production
     ports:
-      - "5000:5000"
+      - "80:5000"
     volumes:
       - .:/usr/src/app/
     restart: always
