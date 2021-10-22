@@ -4,6 +4,7 @@
 from flask import Flask
 from flask_restful import Api
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 
 # App
 from api import db
@@ -17,6 +18,8 @@ def create_app():
     """Initialize the core application."""
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object('config.Config')
+    app.config['JWT_SECRET_KEY']='frase-secreta'
+    app.config['PROPAGATE_EXCEPTIONS']=True
 
     # Initialize Plugins
     db.init_app(app)
@@ -24,9 +27,10 @@ def create_app():
     with app.app_context():
         # Include Routes
         api = Api(app)
+        jwt = JWTManager(app)
 
         # Auth
-        api.add_resource(LoginView, '/api/auth/login', methods=['POST'])
+        api.add_resource(LoginView, '/api/auth/login')
         api.add_resource(SignUpView, '/api/auth/signup', methods=['POST'])
 
         # Tasks
@@ -40,3 +44,5 @@ def create_app():
         migrate = Migrate(app, db)
 
         return app
+    
+    
