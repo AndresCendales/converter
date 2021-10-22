@@ -8,6 +8,8 @@ services:
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd@127.0.0.1:5432/converter
       - FLASK_ENV=production
+      - UPLOAD_FOLDER=/usr/src/app/files
+      - APP_MODE=production
     ports:
       - "80:5000"
     volumes:
@@ -17,15 +19,22 @@ services:
 
   worker:
     build:
-      context: ./celery
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: celery/Dockerfile
     command: celery -A tasks worker -l info -E
     environment:
       CELERY_BROKER_URL: redis://redis
       CELERY_RESULT_BACKEND: redis://redis
+      DSN: postgresql://app_usr:app_pwd@db:5432/app_db
     depends_on:
       - redis
-    volumes: [ './celery:/queue' ]
+    volumes:
+      - type: bind
+        source: ./files
+        target: /queue/files
+      - type: bind
+        source: ./logs
+        target: /queue/logs
 
   redis:
     image: redis:alpine

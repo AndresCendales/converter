@@ -4,6 +4,10 @@ from app import db
 # Views
 from flask.views import MethodView
 from flask import request
+from werkzeug.utils import secure_filename
+
+# Flask
+from flask_jwt_extended import  get_jwt_identity
 
 # Models
 from api.tasks.models import Task, TaskSchema
@@ -11,8 +15,13 @@ from api.tasks.models import Task, TaskSchema
 # Workers
 from api.tasks.worker import celery
 
+# Validations
+from api.tasks.validate import allowed_file
+
 # Utils
 from datetime import datetime
+import os
+
 from util import Logger
 
 task_schema = TaskSchema()
@@ -30,21 +39,38 @@ class TasksView(MethodView):
         Create a new task.
         :return:
         """
-        data = request.json
+        file = request.files.get('fileName')
+        if file is None:
+            return {"message": "Por favor adjunta el archivo que deseas convertir"}, 400
+
+        if file.filename == '':
+            return {"message": "Filename invalido"}, 400
+
+        file.filename = secure_filename(file.filename)
+        if not allowed_file(file.filename):
+            return {"message": "Archivo no permitido. Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
+
+        new_format = request.form.get('newFormat')
+        if new_format is None:
+            return {"message": "Por favor incluye el formato al que deseas convertir"}, 400
+
+        filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), file.filename)
+        file.save(filepath)
 
         new_task = Task(
-            original_file_path=data.get('fileName', ''),
-            new_file_path="NEW",
-            new_format=data.get('newFormat', ''),
+            # user_id=get_jwt_identity(),
             status='uploaded',
+            new_format=new_format,
+            original_file_path=file.filename,
+            new_file_path="",
             timestamp=datetime.utcnow()
         )
         db.session.add(new_task)
         db.session.commit()
 
-        celery.send_task('tasks.convert', args=[new_task.original_file_path, new_task.new_format], kwargs={})
+        celery.send_task('tasks.convert', args=[file.filename, new_format], kwargs={})
 
-        return {"message": "tarea creada"}, 200
+        return {"message": "tarea creada satisfactoriamente."}, 200
 
     def get(self):
         """
