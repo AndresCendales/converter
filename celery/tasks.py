@@ -89,11 +89,11 @@ def update_database_status(user_id, original_filename, new_filename):
             logger.error('CeleryTasks', 'error', f'No se puede actualizar el estatus: {error}')
 
 
-def delete(user_name, filename_to_delete):
+def delete(user_id, filename_to_delete):
     """
     delete a file
     """
-    os.system(f"rm files/{user_name}/{filename_to_delete}")
+    os.system(f"rm files/{user_id}/{filename_to_delete}")
 
 
 sender = "Coverter <notifier@converter.com>"

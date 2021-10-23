@@ -199,5 +199,16 @@ class TaskView(MethodView):
         Create a new task.
         :return:
         """
-        # ToDo
-        return "Delete one task: {id_task}"
+        user = User.query.filter_by(username=get_jwt_identity()).first()
+
+        task = Task.query.filter_by(id=id_task, user_id=user.id).first()
+        if task is None:
+            logger.info('TaskView', 'get', 'Tarea no encontrada')
+            return {'mensaje': 'tarea no encontrada'}, 404
+
+        if task.status == 'processed':
+            os.system(f"rm -rf files/{user.id}/{task.original_file_path}")
+            db.session.delete(task)
+            db.session.commit()
+
+        return "", 200
