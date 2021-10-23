@@ -1,5 +1,6 @@
 # App
 import os
+import re
 from os import access
 from sqlalchemy.orm import query
 from api.notificator.notifier import Notifier
@@ -55,6 +56,13 @@ class SignUpView(Resource):
 
         if data.get('password1') != data.get('password2'):
             return {"message": "user not created. passwords don't match."}, 400
+
+        reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,}$"
+        pat = re.compile(reg)
+        mat = re.search(pat, data.get('password1').strip())
+        
+        if not mat:
+            return {"message": "user not created. password doesn't meet the security requirements."}, 400
 
         user_by_name = User.query.filter_by(username=data.get('username')).first()
         if (user_by_name != None):
