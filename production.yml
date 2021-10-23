@@ -34,8 +34,8 @@ services:
       dockerfile: celery/Dockerfile
     command: celery -A tasks worker -l info -E
     environment:
-      CELERY_BROKER_URL: redis://redis
-      CELERY_RESULT_BACKEND: redis://redis
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
       DSN: postgresql://app_usr:app_pwd@db:5432/app_db
     depends_on:
       - redis
