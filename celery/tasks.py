@@ -5,6 +5,9 @@ from celery import Celery
 import psycopg2
 from psycopg2 import Error
 
+# Email
+from notificator.notifier import Notifier
+
 # Utils
 import os
 from util.logger import Logger
@@ -37,7 +40,12 @@ def convert(user_id, original_filename, new_format, filename_to_delete=""):
         delete(user_id, filename_to_delete)
 
     if os.getenv('APP_MODE') != "TEST":
-        send_email()
+        Notifier().send_notification_to_download(
+            original_file_path=original_filename,
+            new_format=new_format,
+            new_file_path=new_filename
+        )
+        logger.info('CeleryTasks', 'send_email', 'Email enviado correctamente')
 
 
 def execute_conversion(user_id, original_filename, new_filename):
@@ -49,7 +57,8 @@ def execute_conversion(user_id, original_filename, new_filename):
     :return:
     """
     os.system(f"ffmpeg -i files/{user_id}/{original_filename} files/{user_id}/{new_filename} -y")
-    logger.info('CeleryTasks', 'execute_conversion', f'ruta: files/{user_id}/{original_filename} files/{user_id}/{new_filename}')
+    logger.info('CeleryTasks', 'execute_conversion',
+                f'ruta: files/{user_id}/{original_filename} files/{user_id}/{new_filename}')
 
 
 def update_database_status(user_id, original_filename, new_filename):
@@ -77,7 +86,7 @@ def update_database_status(user_id, original_filename, new_filename):
         cursor.close()
         connection.close()
     except (Exception, Error) as error: \
-            logger.info('CeleryTasks', 'error', f'No se puede actualizar el estatus: {error}')
+            logger.error('CeleryTasks', 'error', f'No se puede actualizar el estatus: {error}')
 
 
 def delete(user_name, filename_to_delete):
@@ -85,9 +94,3 @@ def delete(user_name, filename_to_delete):
     delete a file
     """
     os.system(f"rm files/{user_name}/{filename_to_delete}")
-
-
-def send_email():
-    logger.info('CeleryTasks', 'send_email', 'Email enviado correctamente')
-    # ToDo
-    pass
