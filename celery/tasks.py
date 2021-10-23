@@ -49,7 +49,7 @@ def execute_conversion(user_id, original_filename, new_filename):
     :return:
     """
     os.system(f"ffmpeg -i files/{user_id}/{original_filename} files/{user_id}/{new_filename} -y")
-    logger.info('CeleryTasks', 'execute_conversion', 'Conversion finalizada')
+    logger.info('CeleryTasks', 'execute_conversion', f'ruta: files/{user_id}/{original_filename} files/{user_id}/{new_filename}')
 
 
 def update_database_status(user_id, original_filename, new_filename):
