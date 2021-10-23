@@ -6,16 +6,27 @@ services:
       context: .
       dockerfile: config/Dockerfile
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd@127.0.0.1:5432/converter
+      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd@db:5432/app_db
       - FLASK_ENV=production
       - UPLOAD_FOLDER=/usr/src/app/files
       - APP_MODE=production
     ports:
-      - "80:5000"
+      - "8080:8080"
     volumes:
       - .:/usr/src/app/
     restart: always
     entrypoint: ["./config/prod/entrypoint.sh"]
+
+  db:
+    image: postgres
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=app_usr
+      - POSTGRES_PASSWORD=app_pwd
+      - POSTGRES_DB=app_db
+    ports:
+      - "5432:5432"
 
   worker:
     build:

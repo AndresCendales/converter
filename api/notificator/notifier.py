@@ -1,6 +1,4 @@
 import smtplib
-from flask_restful import Resource
-from flask import request
 
 sender = "Coverter <notifier@converter.com>" 
 receivers = ['Anderson Santamaria <andersonsantamaria3@gmail.com>'
