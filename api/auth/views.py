@@ -1,4 +1,5 @@
 # App
+import os
 from os import access
 from sqlalchemy.orm import query
 from api.notificator.notifier import Notifier
@@ -6,7 +7,7 @@ from app import db
 
 # Flask
 from flask_restful import Resource
-from flask import request,jsonify, make_response
+from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
 # Models
@@ -23,12 +24,12 @@ class LoginView(Resource):
         if (data == None or data.get('username') == None or data.get('password') == None):
             return {"message": "please send the values for the request."}, 400
 
-        user_by_name = User.query.filter_by(username = data.get('username')).first()
+        user_by_name = User.query.filter_by(username=data.get('username')).first()
         if (user_by_name == None):
             return {"message": "user isn't registered."}, 400
         if (user_by_name.password.strip() != data.get('password').strip()):
             return {"message": "error with login."}, 400
-        
+
         access_token = create_access_token(identity=user_by_name.username)
         return {"message": "user logged", "access_token": access_token}, 200
 
@@ -37,8 +38,9 @@ class LoginView(Resource):
         username = get_jwt_identity()
 
         notifier = Notifier()
-        notifier.send_notification_to_download(username, "/original-file-path.txt","pdf", "/new-file-path.pdf")
-        return 'hola '+username, 200
+        notifier.send_notification_to_download(username, "/original-file-path.txt", "pdf", "/new-file-path.pdf")
+        return 'hola ' + username, 200
+
 
 class SignUpView(Resource):
     def post(self):
@@ -47,18 +49,18 @@ class SignUpView(Resource):
         :return:
         """
         data = request.json
-        if (data == None or data.get('username') == None or data.get('password1') == None 
-        or data.get('password2') == None or data.get('email') == None):
+        if (data == None or data.get('username') == None or data.get('password1') == None
+                or data.get('password2') == None or data.get('email') == None):
             return {"message": "please send the values for the request."}, 400
 
         if data.get('password1') != data.get('password2'):
             return {"message": "user not created. passwords don't match."}, 400
-        
-        user_by_name = User.query.filter_by(username = data.get('username')).first()
+
+        user_by_name = User.query.filter_by(username=data.get('username')).first()
         if (user_by_name != None):
             return {"message": "user not created. username in use."}, 400
 
-        user_by_email = User.query.filter_by(email = data.get('email')).first()
+        user_by_email = User.query.filter_by(email=data.get('email')).first()
         if (user_by_email != None):
             return {"message": "user not created. email in use."}, 400
 
@@ -67,9 +69,14 @@ class SignUpView(Resource):
             password=data.get('password1').strip(),
             email=data.get('email').strip()
         )
+
         access_token = create_access_token(identity=data.get('username').strip())
 
         db.session.add(new_user)
-        db.session.commit()           
+        db.session.flush()
+        db.session.refresh(new_user)
+        db.session.commit()
+
+        os.system(f"mkdir files/{new_user.id}")
 
         return {"message": "user created", "access_token": access_token}, 201
