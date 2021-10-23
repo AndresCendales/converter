@@ -15,7 +15,7 @@ services:
       - UPLOAD_FOLDER=/usr/src/app/files
       - APP_MODE=develop
     ports:
-      - "5000:5000"
+      - "8080:8080"
     volumes:
       - .:/usr/src/app/
     restart: always
