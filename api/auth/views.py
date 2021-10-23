@@ -69,6 +69,9 @@ class SignUpView(Resource):
             password=data.get('password1').strip(),
             email=data.get('email').strip()
         )
+
+        access_token = create_access_token(identity=data.get('username').strip())
+
         db.session.add(new_user)
         db.session.flush()
         db.session.refresh(new_user)
@@ -76,4 +79,4 @@ class SignUpView(Resource):
 
         os.system(f"mkdir files/{new_user.id}")
 
-        return {"message": "user created"}, 201
+        return {"message": "user created", "access_token": access_token}, 201
