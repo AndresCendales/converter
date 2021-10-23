@@ -12,6 +12,8 @@ services:
       - FLASK_ENV=development
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - UPLOAD_FOLDER=/usr/src/app/files
+      - APP_MODE=develop
     ports:
       - "5000:5000"
     volumes:
@@ -32,26 +34,34 @@ services:
 
   worker:
     build:
-      context: ./celery
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: celery/Dockerfile
     command: celery -A tasks worker -l info -E
     environment:
       CELERY_BROKER_URL: redis://redis
       CELERY_RESULT_BACKEND: redis://redis
+      DSN: postgresql://app_usr:app_pwd@db:5432/app_db
     depends_on:
       - redis
-    volumes: [ './celery:/queue' ]
+    volumes:
+      - type: bind
+        source: ./files
+        target: /queue/files
+      - type: bind
+        source: ./logs
+        target: /queue/logs
 
   monitor:
     build:
-      context: ./celery
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: celery/Dockerfile
     ports:
       - "5555:5555"
     command: [ 'celery', 'flower', '-A', 'tasks' ]
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      DSN: postgresql://app_usr:app_pwd@db:5432/app_db
     depends_on:
       - redis
       - worker

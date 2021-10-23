@@ -134,3 +134,8 @@ dmypy.json
 
 ./logs/*.log
 local_notes.txt
+
+/migrations/
+/files/*
+/celery/files/*
+/celery/logs/*
