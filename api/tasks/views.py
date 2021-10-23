@@ -104,14 +104,13 @@ class TasksView(MethodView):
         :return:
         """
         try:
-            # TODO: actualizar con el id de usuario desde el token
-            user_id = get_jwt_identity()
+            user = User.query.filter_by(username=get_jwt_identity()).first()
             max = request.args.get('max') or None
             if (max == '0'):
                 max = None
             order = request.args.get('order') or 0
             query_order = Task.id.asc() if order == '0' else Task.id.desc()
-            tasks = Task.query.filter_by(user_id=user_id).order_by(query_order).limit(max).all()
+            tasks = Task.query.filter_by(user_id=user.id).order_by(query_order).limit(max).all()
             if (len(tasks) == 0):
                 logger.info('TasksView', 'get', 'Consulta de tareas sin resultado')
                 return 'El usuario no tiene tareas', 400
@@ -136,13 +135,15 @@ class TaskView(MethodView):
         Retrieve all tasks
         :return:
         """
-        # TODO: actualizar con el token del usuario
-        user_id = get_jwt_identity()
+        user = User.query.filter_by(username=get_jwt_identity()).first()
         try:
             task = Task.query.get(id_task)
             if task is None:
                 logger.info('TaskView', 'get', 'Tarea no encontrada')
                 return {'task': 'not found'}, 404
+            if task.user_id != user.id:
+                logger.info('TaskView', 'get', 'Tarea de otro usuario')
+                return {'task': 'the task is of the other user'}, 404
 
             logger.info('TaskView', 'get', 'Tarea encontrada')
             return task_schema.dump(task), 200
@@ -199,4 +200,4 @@ class TaskView(MethodView):
         :return:
         """
         # ToDo
-        return f"Delete one task: {id_task}"
+        return "Delete one task: {id_task}"
