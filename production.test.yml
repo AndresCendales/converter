@@ -4,3 +4,6 @@ services:
   app:
     environment:
       - APP_MODE=TEST
+  worker:
+    environment:
+      - LIMIT_PROCESSING_TEST=10
