@@ -1,18 +1,17 @@
 # App
-import os
-import re
-from os import access
-from sqlalchemy.orm import query
-from api.notificator.notifier import Notifier
 from app import db
 
 # Flask
 from flask_restful import Resource
-from flask import request, jsonify, make_response
-from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
+from flask import request
+from flask_jwt_extended import create_access_token
 
 # Models
 from api.auth.models import User
+
+# Utils
+import os
+import re
 
 
 class LoginView(Resource):
@@ -33,14 +32,6 @@ class LoginView(Resource):
 
         access_token = create_access_token(identity=user_by_name.username)
         return {"message": "user logged", "access_token": access_token}, 200
-
-    @jwt_required()
-    def get(self):
-        username = get_jwt_identity()
-
-        notifier = Notifier()
-        notifier.send_notification_to_download(username, "/original-file-path.txt", "pdf", "/new-file-path.pdf")
-        return 'hola ' + username, 200
 
 
 class SignUpView(Resource):

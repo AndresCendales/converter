@@ -8,3 +8,8 @@
 ```shell
  docker-compose -f produccion.yml up --build           
 ```
+
+## Test production
+```shell
+ docker-compose -f produccion.yml -f production.test.yml up --build           
+```
