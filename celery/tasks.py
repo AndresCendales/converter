@@ -57,8 +57,28 @@ def execute_conversion(user_id, original_filename, new_filename):
     :return:
     """
     os.system(f"ffmpeg -i files/{user_id}/{original_filename} files/{user_id}/{new_filename} -y")
-    logger.info('CeleryTasks', 'execute_conversion',
-                f'ruta: files/{user_id}/{original_filename} files/{user_id}/{new_filename}')
+    try:
+        # Connect to an existing database
+        connection = psycopg2.connect(dsn=os.getenv("DSN", "postgresql://app_usr:app_pwd@127.0.0.1:5432/app_db"))
+
+        # Create a cursor to perform database operations
+        cursor = connection.cursor()
+        query = f"SELECT timestamp FROM tasks WHERE original_file_path = '{original_filename}' AND user_id = {user_id} ORDER BY timestamp DESC"
+        cursor.execute(query)
+        difference = datetime.now() - cursor.fetchone()[0]
+        if difference.total_seconds() > 600:
+            logger.info("ProccesOutOfTime", 'ProccesOutOfTime',
+                        f"El proceso de conversion tardo: {difference.total_seconds()} s")
+
+        logger.info('CeleryTasks', 'execute_conversion',
+                    f'ruta: files/{user_id}/{original_filename} files/{user_id}/{new_filename}. Tiempo conversion> {difference.total_seconds()} s')
+        # Close resources
+        cursor.close()
+        connection.close()
+    except (Exception, Error) as error: \
+        logger.error('CeleryTasks', 'error', f'No se puede calcular el tiempo de procesamiento: {error}')
+
+
 
 
 def update_database_status(user_id, original_filename, new_filename):
@@ -79,14 +99,7 @@ def update_database_status(user_id, original_filename, new_filename):
         query = f"UPDATE tasks SET status = 'processed', new_file_path = '{new_filename}' WHERE original_file_path = '{original_filename}' AND user_id = {user_id};"
         cursor.execute(query)
         connection.commit()
-
-        query = f"SELECT timestamp FROM tasks WHERE original_file_path = '{original_filename}' AND user_id = {user_id}"
-        cursor.execute(query)
-        difference = datetime.now() - cursor.fetchone()[0]
-        if difference.total_seconds() > 600:
-            logger.info("ProccesOutOfTime", 'ProccesOutOfTime', f"El proceso de conversion tardo: {difference.total_seconds()} s")
-
-        logger.info('CeleryTasks', 'update_database_status', f'Estatus actualizado correctamente. El proceso tardo: {difference.total_seconds()} s')
+        logger.info('CeleryTasks', 'update_database_status', f'Estatus actualizado correctamente.')
 
         # Close resources
         cursor.close()

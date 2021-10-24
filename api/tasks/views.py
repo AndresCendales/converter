@@ -57,7 +57,7 @@ class TasksView(MethodView):
                        "message": "Archivo no permitido. Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
 
         task = Task.query.filter_by(original_file_path=file.filename, user_id=user.id).first()
-        if task is not None:
+        if task is not None and os.getenv("APP_MODE") != "TEST":
             return {
                        "message": "Ya existe un archivo con este nombre. Para actualizar el formato se debe usar el endpoint via PUT",
                        "id_task": task.id}, 400
