@@ -10,6 +10,7 @@ import smtplib
 
 # Utils
 import os
+from datetime import datetime
 from util.logger import Logger
 
 logger = Logger()
@@ -47,7 +48,6 @@ def convert(user_id, original_filename, new_format, filename_to_delete=""):
         )
 
 
-
 def execute_conversion(user_id, original_filename, new_filename):
     """
     Execute_conversion pass command line to the system wich execute the file conversion
@@ -80,7 +80,13 @@ def update_database_status(user_id, original_filename, new_filename):
         cursor.execute(query)
         connection.commit()
 
-        logger.info('CeleryTasks', 'update_database_status', 'Estatus actualizado correctamente')
+        query = f"SELECT timestamp FROM tasks WHERE original_file_path = '{original_filename}' AND user_id = {user_id}"
+        cursor.execute(query)
+        difference = datetime.now() - cursor.fetchone()[0]
+        if difference.total_seconds() > 600:
+            logger.info("ProccesOutOfTime", 'ProccesOutOfTime', f"El proceso de conversion tardo: {difference.total_seconds()} s")
+
+        logger.info('CeleryTasks', 'update_database_status', f'Estatus actualizado correctamente. El proceso tardo: {difference.total_seconds()} s')
 
         # Close resources
         cursor.close()
