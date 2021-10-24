@@ -37,6 +37,7 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       DSN: postgresql://app_usr:app_pwd@db:5432/app_db
+      MAILGUN_PASSWORD: 8b846483a628a867fb953bb4a87e1f1d-a3c55839-d5a0e644
     depends_on:
       - redis
     volumes:

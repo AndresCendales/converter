@@ -91,6 +91,7 @@ class TasksView(MethodView):
                 user.id,
                 file.filename,
                 new_format,
+                datetime.now(),
                 ""
             ],
             kwargs={}
@@ -190,6 +191,7 @@ class TaskView(MethodView):
                 user.id,
                 task.original_file_path,
                 new_format,
+                datetime.now(),
                 task.new_file_path
             ],
             kwargs={}
