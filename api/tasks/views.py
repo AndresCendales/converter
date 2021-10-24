@@ -175,7 +175,7 @@ class TaskView(MethodView):
         task = Task.query.filter_by(id=id_task).first()
         if task is None:
             return {"mensaje": "La tarea no existe"}, 404
-        if task.new_format == new_format or task.original_file_path.rsplit('.', 1)[1] == new_format:
+        if (task.new_format == new_format or task.original_file_path.rsplit('.', 1)[1] == new_format) and os.getenv("APP_MODE") != "TEST" :
             return {"mensaje": f"La conversion hacia el formato {new_format} ya ha sido realizada."}, 400
 
         task.status = "uploaded"
