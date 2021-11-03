@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: config/Dockerfile
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd@db:5432/app_db
+      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
       - FLASK_ENV=production
       - UPLOAD_FOLDER=/usr/src/app/files
       - APP_MODE=production
@@ -17,17 +17,6 @@ services:
     restart: always
     entrypoint: ["./config/prod/entrypoint.sh"]
 
-  db:
-    image: postgres
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=app_usr
-      - POSTGRES_PASSWORD=app_pwd
-      - POSTGRES_DB=app_db
-    ports:
-      - "5432:5432"
-
   worker:
     build:
       context: .
@@ -37,7 +26,6 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       DSN: postgresql://app_usr:app_pwd@db:5432/app_db
-      MAILGUN_PASSWORD: 8b846483a628a867fb953bb4a87e1f1d-a3c55839-d5a0e644
     depends_on:
       - redis
     volumes:

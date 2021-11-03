@@ -13,7 +13,7 @@ Env variables:
 ```
 Env variables
 - MAILGUN_PASSWORD=XXXXXX :Access token of mailgun to send emails.
-
+- MAILGUN_ENDPOINT=XXXXXX : Endpoint of mailguns' api.
 
 ## Test production
 ```shell
