@@ -9,12 +9,12 @@ services:
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
-      DSN: postgresql://app_usr:app_pwd@db:5432/app_db
+      DSN: postgresql://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
     depends_on:
       - redis
     volumes:
       - type: bind
-        source: ./files
+        source: /nfs/converter_files
         target: /queue/files
       - type: bind
         source: ./logs
