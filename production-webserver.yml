@@ -8,7 +8,7 @@ services:
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
       - FLASK_ENV=production
-      - UPLOAD_FOLDER=/usr/src/app
+      - UPLOAD_FOLDER=/usr/src/app/files
       - APP_MODE=production
       - CELERY_BROKER_URL=redis://172.31.88.145:6379/0
       - CELERY_RESULT_BACKEND=redis://172.31.88.145:6379/0
@@ -18,8 +18,8 @@ services:
     volumes:
       - .:/usr/src/app/
       - type: bind
-        source: ./files
-        target: /nfs/converter_files
+        source: /nfs/converter_files
+        target: /usr/src/app/files
 
     restart: always
     entrypoint: ["./config/prod/entrypoint.sh"]
