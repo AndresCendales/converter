@@ -10,7 +10,7 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       DSN: postgresql://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
-      NOTIFICATION_ENDPOINT: https://hooks.slack.com/services/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
+      NOTIFICATION_ENDPOINT: https://hooks.slack.com/services/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
     depends_on:
       - redis
     volumes:
