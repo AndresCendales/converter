@@ -47,9 +47,11 @@ def convert(user_id, original_filename, new_format, created_at, filename_to_dele
         delete(user_id, filename_to_delete)
 
     if os.getenv('APP_MODE') != "TEST":
-	send_notification( original_file_path=original_filename,
+        send_notification(
+            original_file_path=original_filename,
             new_format=new_format,
-            new_file_path=new_filename)
+            new_file_path=new_filename
+        )
 
 
 def execute_conversion(user_id, original_filename, new_filename):
@@ -107,10 +109,10 @@ it's ready. Best regards from Converter.""".format(original_file_path, new_forma
     r = requests.post(
         os.getenv("NOTIFICATION_ENDPOINT"),
         data={
-		"payload": {
-			"text":message,
-		},
-	})
+            "payload": {
+                "text": message,
+            },
+        })
 
     if r.status_code == 200:
         logger.info('CeleryTasks', 'send_notification', 'Notificacion enviada correctamente')
