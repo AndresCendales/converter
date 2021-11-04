@@ -10,6 +10,7 @@ import smtplib
 
 # Utils
 import os
+import json
 import requests
 from datetime import datetime
 from util.logger import Logger
@@ -104,15 +105,13 @@ def delete(user_id, filename_to_delete):
 def send_notification(original_file_path, new_format, new_file_path):
     message = """Hi! 
 The document that you uploaded in the route {}, to be converted to one of a kind {}
-it's ready. Best regards from Converter.""".format(original_file_path, new_format)
+it's ready. 
+Best regards from Converter.""".format(original_file_path, new_format)
 
     r = requests.post(
-        os.getenv("NOTIFICATION_ENDPOINT"),
-        data={
-            "payload": {
-                "text": message,
-            },
-        })
+        url=os.getenv("NOTIFICATION_ENDPOINT"),
+        data=json.dumps({"text": message})
+    )
 
     if r.status_code == 200:
         logger.info('CeleryTasks', 'send_notification', 'Notificacion enviada correctamente')
