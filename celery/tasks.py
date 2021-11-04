@@ -47,11 +47,9 @@ def convert(user_id, original_filename, new_format, created_at, filename_to_dele
         delete(user_id, filename_to_delete)
 
     if os.getenv('APP_MODE') != "TEST":
-        send_email(
-            original_file_path=original_filename,
+	send_notification( original_file_path=original_filename,
             new_format=new_format,
-            new_file_path=new_filename
-        )
+            new_file_path=new_filename)
 
 
 def execute_conversion(user_id, original_filename, new_filename):
@@ -101,21 +99,20 @@ def delete(user_id, filename_to_delete):
     os.system(f"rm files/{user_id}/{filename_to_delete}")
 
 
-def send_email(original_file_path, new_format, new_file_path):
-    html = """Hi! <br/> <br/>
-The document that you uploaded in the route <b>{}</b>, to be converted to one of a kind <b>{}</b>
-it's ready, you can find it with on the route <b>{}</b>
-Best regards from Converter.""".format(original_file_path, new_format, new_file_path)
+def send_notification(original_file_path, new_format, new_file_path):
+    message = """Hi! 
+The document that you uploaded in the route {}, to be converted to one of a kind {}
+it's ready. Best regards from Converter.""".format(original_file_path, new_format)
 
     r = requests.post(
-        os.getenv("MAILGUN_ENDPOINT"),
-        auth=("api", os.getenv("MAILGUN_PASSWORD")),
-        data={"from": "Coverter <notifier@converter.com>",
-              "to": ['Andres Cendales <andres01660@gmail.com>'],
-              "subject": "Converted document!",
-              "text": html})
+        os.getenv("NOTIFICATION_ENDPOINT"),
+        data={
+		"payload": {
+			"text":message,
+		},
+	})
 
     if r.status_code == 200:
-        logger.info('CeleryTasks', 'send_email', 'Email enviado correctamente')
+        logger.info('CeleryTasks', 'send_notification', 'Notificacion enviada correctamente')
     else:
-        logger.error('CeleryTasks', 'send_email', f'Email no enviado {r.text}')
+        logger.error('CeleryTasks', 'send_notification', f'Notificacion no enviada {r.text}')
