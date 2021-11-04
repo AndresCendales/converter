@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  worker:
+    build:
+      context: .
+      dockerfile: celery/Dockerfile
+    command: celery -A tasks worker -l info -E
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      DSN: postgresql://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
+      NOTIFICATION_ENDPOINT: https://hooks.slack.com/services/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
+    depends_on:
+      - redis
+    volumes:
+      - type: bind
+        source: /nfs/converter_files
+        target: /queue/files
+      - type: bind
+        source: ./logs
+        target: /queue/logs
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - "./redis.conf:/usr/local/etc/redis/redis.conf"
+
+    ports:
+      - "6379:6379"
