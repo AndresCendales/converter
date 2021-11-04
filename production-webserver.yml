@@ -10,8 +10,8 @@ services:
       - FLASK_ENV=production
       - UPLOAD_FOLDER=/home/ubuntu/Proyecto-Grupo4-202120/files
       - APP_MODE=production
-      - CELERY_BROKER_URL=172.31.88.145:6379
-      - CELERY_RESULT_BACKEND=172.31.88.145:6379
+      - CELERY_BROKER_URL=redis://172.31.88.145:6379:6379/0
+      - CELERY_RESULT_BACKEND=redis://172.31.88.145:6379:6379/0
 
     ports:
       - "8080:8080"
