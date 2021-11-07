@@ -1,28 +1,58 @@
-## Local Development
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <h3 align="center">Converter </h3>
+
+  <p align="center">
+    An awesome audio files converter
+    <br />
+    <a href="https://documenter.getpostman.com/view/17477086/UV5aeF2o"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+  </p>
+</div>
+
+### About the project
+
+Converter is a simple audio converter. It converts audio files to mp3, ogg, wav,  wma.
+
+### Local Development
+For local development run the follow command that will start the containers of webserver
+worker, broker and posgtres database.
+
 ```shell
 # Run app
  docker-compose -f local.yml up --build           
 ```
-Env variables:
+There is no need to setup  any env variable, because there are declared in the docker-compose file.
 
 
-
-## Deploy production
-
+### Deploy production
+The deploy is running in aws in different ec2 machines.
+All the code related with the system is in the repository, but each machine runs differents containers:
 ```shell
 # Webserver
- docker-compose -f produccion-webserver.yml up --build           
-
-# Worker
- docker-compose -f produccion-worker.yml up --build           
-
+cd /usr/src/app/ folder #  Move to the path were the files are allocated
+docker-compose -f production-webserver.yml up --build # Start the webserver container
 ```
+
+```shell
+# Worker
+cd /usr/src/app/ #  Move to the path were the files are allocated
+docker-compose -f production-worker.yml up --build # Start the worker, broker container
+```
+
+```shell
+# File Server
+cd /var/nfs/converter_files #  Move to the path were the files are allocated
+```
+There is no needed to run any container. The propouse of file server is to save all the files. 
+The given path is binded with the containers that run in the worker and webserver via NFS. 
 
 ## Test production
-The testing environment avoid the use of slack notifications.
+For load testing we disable the slack notifications, please run the following command into the web server: 
 ```shell
- docker-compose -f produccion.yml -f production.test.yml up --build           
+cd /usr/src/app/ #  Move to the path were the files are allocated
+docker-compose -f production-webserver.yml up -f production-webserver.test.yml -d --build # Start the webserver         
 ```
-Env Variables
-- APP_MODE=TEST: Avoid slack notifications
-- LIMIT_PROCESSING_TEST=1 : Number in seconds for a task processing. Used for test propouses
+The production-webserver.test.yml set the env variables into test mode app.
