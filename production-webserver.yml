@@ -15,11 +15,6 @@ services:
 
     ports:
       - "8080:8080"
-    volumes:
-      - .:/usr/src/app/
-      - type: bind
-        source: /nfs/converter_files
-        target: /usr/src/app/files
 
     restart: always
     entrypoint: ["./config/prod/entrypoint.sh"]
