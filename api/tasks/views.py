@@ -45,8 +45,12 @@ class TasksView(MethodView):
         :return:
         """
         user = User.query.filter_by(username=get_jwt_identity()).first()
-
+        
+        if 'file' not in request.files:
+            return {"message": "No file part"}, 400
+        
         file = request.files.get('fileName')
+        
         if file is None:
             return {"message": "Por favor adjunta el archivo que deseas convertir"}, 400
         if file.filename == '':
@@ -66,8 +70,7 @@ class TasksView(MethodView):
         if new_format is None:
             return {"message": "Por favor incluye el formato al que deseas convertir"}, 400
         if new_format not in ALLOWED_EXTENSIONS:
-            return {
-                       "message": "newFormat invalido, Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
+            return {"message": "newFormat invalido, Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
 
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), f"{user.id}/" + file.filename)
         file.save(filepath)
