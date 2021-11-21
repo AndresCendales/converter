@@ -25,7 +25,6 @@ from api.tasks.validate import allowed_file
 # Utils
 from datetime import datetime
 import os
-import subprocess
 from util import Logger, s3_service
 
 task_schema = TaskSchema()
@@ -45,9 +44,6 @@ class TasksView(MethodView):
         :return:
         """
         user = User.query.filter_by(username=get_jwt_identity()).first()
-        
-        if 'file' not in request.files:
-            return {"message": "No file part"}, 400
         
         file = request.files.get('fileName')
         
