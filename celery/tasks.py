@@ -13,6 +13,7 @@ import os
 import json
 import requests
 from datetime import datetime
+from util import s3_service
 from util.logger import Logger
 
 logger = Logger()
@@ -63,6 +64,7 @@ def execute_conversion(user_id, original_filename, new_filename):
     :param new_filename:
     :return:
     """
+    s3_service.s3_download_file(original_filename, original_filename)
     os.system(f"ffmpeg -i files/{user_id}/{original_filename} files/{user_id}/{new_filename} -y")
     logger.info("CeleryTasks", "execute_conversion",
                 f'ruta: files/{user_id}/{original_filename} files/{user_id}/{new_filename}.')

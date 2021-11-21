@@ -1,7 +1,7 @@
 import boto3
 
 def s3_download_file(s3_path: str, file_name: str) -> str:
-    local_path = f'./{file_name}'
+    local_path = f'files/{file_name}'
     s3 = boto3.resource("s3")
     bucket = s3.Bucket("conversionaudiogrupo4")
     bucket.download_file(s3_path,
