@@ -25,7 +25,7 @@ from api.tasks.validate import allowed_file
 # Utils
 from datetime import datetime
 import os
-
+import subprocess
 from util import Logger
 
 task_schema = TaskSchema()
@@ -71,6 +71,9 @@ class TasksView(MethodView):
 
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), f"{user.id}/" + file.filename)
         file.save(filepath)
+        bashCommand = "aws s3 mv " + filepath + " s3://conversionaudiogrupo4/" + "{user.id}/"
+        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        output, error = process.communicate()
 
         new_task = Task(
             user_id=user.id,
