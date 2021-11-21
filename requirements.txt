@@ -19,3 +19,7 @@ gunicorn==20.1.0
 celery==5.1.2
 flower==1.0.0
 redis==3.5.3
+
+# boto3
+boto3==1.10.50
+botocore==1.13.50

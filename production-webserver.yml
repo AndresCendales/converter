@@ -12,6 +12,9 @@ services:
       - APP_MODE=production
       - CELERY_BROKER_URL=redis://23.20.102.41:6379/0
       - CELERY_RESULT_BACKEND=redis://23.20.102.41:6379/0
+      - AWS_ACCESS_KEY_ID=ASIAZLPHUOXOMUSFOJML
+      - AWS_SECRET_ACCESS_KEY=XrutWldLdtBOpvR8RR9DYtfbupf7X2WAVdJ+bOH9
+      - AWS_SESSION_TOKEN=FwoGZXIvYXdzEGYaDIPdidwogrgE0XvmhiLMAVGFcppqWklvQpwEJV8FNZhb+XnXgdmFN+NAYSIenp8cO+ilTwN4m3JYLlh403Z43r9Og2CxRbhrXjScFRWW4r8z4Rg9ihpoVFCfgEW7tt5V1aw4s5uGsGUG/b/jBgtHgQVG/S577a5FrKyKk+yJp2zD+MlGgrOYjxkFcobg/J/CR8sy0bl70tVNGQIbu7RlfsluBFtGX8fu+weOilZoqsj+9P3+iusmOEBX6yf3mg0i+QZSSCY0YiaixbowJRnxO8g/vsCdsQ/wcj6BsCiY3eqMBjItllPMV9sjUuqpVnQcfo4kkE+slJ+2tdg84p8435piBvwPQbAnWj0caGh8v10r
 
     ports:
       - "8080:8080"

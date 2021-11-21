@@ -26,7 +26,7 @@ from api.tasks.validate import allowed_file
 from datetime import datetime
 import os
 import subprocess
-from util import Logger
+from util import Logger, s3_service
 
 task_schema = TaskSchema()
 logger = Logger()
@@ -71,12 +71,12 @@ class TasksView(MethodView):
             return {"message": "Por favor incluye el formato al que deseas convertir"}, 400
         if new_format not in ALLOWED_EXTENSIONS:
             return {"message": "newFormat invalido, Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
-
+        
+        filename = "{user.id}/" + file.filename
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), f"{user.id}/" + file.filename)
         file.save(filepath)
-        bashCommand = "aws s3 mv " + filepath + " s3://conversionaudiogrupo4/" + "{user.id}/"
-        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-        output, error = process.communicate()
+        s3_path = s3_service.s3_upload_file(filepath, filename)
+        logger.info('TasksView', 'post', 'guardado en la ruta ' + s3_path + ' de s3')
 
         new_task = Task(
             user_id=user.id,
