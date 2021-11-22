@@ -3,3 +3,7 @@ flower==1.0.0
 redis==3.5.3
 psycopg2-binary==2.9.1
 requests
+
+# boto3
+boto3==1.10.50
+botocore==1.13.50

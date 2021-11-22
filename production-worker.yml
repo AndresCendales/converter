@@ -12,6 +12,9 @@ services:
       DSN: postgresql://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
       NOTIFICATION_ENDPOINT: https://hooks.slack.com/services/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
       LIMIT_PROCESSING_TEST: 600
+      AWS_ACCESS_KEY_ID: ASIAZLPHUOXOKRMPYSNZ
+      AWS_SECRET_ACCESS_KEY: qXek8UMAX7My9K9sGvj0nOs4A7vzjmVKH7vnd8mi
+      AWS_SESSION_TOKEN: FwoGZXIvYXdzEGoaDO6ARo0CG8EnkBXMOiLMAYjqz6KWmZ+sRONvQ9GQZTud5LQb72SUBNsJGf6T/2SnMKtkq73QtVOtX9g2v7Wg2pfwGVirVdLtcO4SvGTljG4Ut8Z5toyOYfLLxcIIHHIAieuijQLjgbex9pSK5/D1eR7yZqn20Hi2/B7VBtJiM+KAQEmCsBJHo5x8l9CnnMe/yU7i9EpyXA0NyR7GB8XrrVs/2LnwTWnsVePGDGEZybsyxwYk9LAdb9byPIBNf2Ib0uq8+QvXI2PCWYP9fFQvomO6ybkE2CeUy/l2VijLzuuMBjIttpa4mnfkWZNaBt35Nw5oFzlujFoVxoD8FeceZOYCbhFffH207kalZo/u76OD
     depends_on:
       - redis
     volumes:
