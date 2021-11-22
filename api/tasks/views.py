@@ -188,7 +188,7 @@ class TaskView(MethodView):
         db.session.commit()
 
         user = User.query.filter_by(username=get_jwt_identity()).first()
-
+        s3_path = "files/"+str(user.id)+"/"+task.original_file_path
         celery.send_task(
             'tasks.convert',
             args=[
@@ -196,7 +196,8 @@ class TaskView(MethodView):
                 task.original_file_path,
                 new_format,
                 datetime.now(),
-                task.new_file_path
+                task.new_file_path,
+                s3_path
             ],
             kwargs={}
         )
