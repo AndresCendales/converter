@@ -65,6 +65,8 @@ def execute_conversion(user_id, original_filename, new_filename, s3_path):
     :param new_filename:
     :return:
     """
+
+    os.system(f"mkdir -p files/{user_id}")
     s3_service.s3_download_file(s3_path, str(user_id)+"/"+original_filename)
     os.system(f"ffmpeg -i files/{user_id}/{original_filename} files/{user_id}/{new_filename} -y")
     logger.info("CeleryTasks", "execute_conversion",

@@ -70,6 +70,7 @@ class TasksView(MethodView):
         
         filename = str(user.id)+"/"+file.filename
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), f"{user.id}/" + file.filename)
+        os.system(f"mkdir -p files/{user.id}")
         file.save(filepath)
         s3_path = s3_service.s3_upload_file(filepath, filename)
         logger.info('TasksView', 'post', 'guardado en la ruta ' + s3_path + ' de s3')
