@@ -189,6 +189,8 @@ class TaskView(MethodView):
 
         user = User.query.filter_by(username=get_jwt_identity()).first()
         s3_path = "files/"+str(user.id)+"/"+task.original_file_path
+        logger.info('TaskView', 'put', 'buscar en la ruta ' + s3_path + ' de s3')
+
         celery.send_task(
             'tasks.convert',
             args=[
@@ -201,7 +203,6 @@ class TaskView(MethodView):
             ],
             kwargs={}
         )
-
         return {"mensaje": "Se ha actualizado la tarea", "id_task": task.id}
 
     @jwt_required()
