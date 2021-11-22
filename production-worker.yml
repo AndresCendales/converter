@@ -16,9 +16,6 @@ services:
       - redis
     volumes:
       - type: bind
-        source: /nfs/converter_files
-        target: /queue/files
-      - type: bind
         source: ./logs
         target: /queue/logs
 
