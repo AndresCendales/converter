@@ -25,8 +25,7 @@ from api.tasks.validate import allowed_file
 # Utils
 from datetime import datetime
 import os
-
-from util import Logger
+from util import Logger, s3_service
 
 task_schema = TaskSchema()
 logger = Logger()
@@ -45,8 +44,9 @@ class TasksView(MethodView):
         :return:
         """
         user = User.query.filter_by(username=get_jwt_identity()).first()
-
+        
         file = request.files.get('fileName')
+        
         if file is None:
             return {"message": "Por favor adjunta el archivo que deseas convertir"}, 400
         if file.filename == '':
@@ -66,11 +66,14 @@ class TasksView(MethodView):
         if new_format is None:
             return {"message": "Por favor incluye el formato al que deseas convertir"}, 400
         if new_format not in ALLOWED_EXTENSIONS:
-            return {
-                       "message": "newFormat invalido, Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
-
+            return {"message": "newFormat invalido, Las extensiones soportadas son {'mp3', 'acc', 'ogg', 'wav', 'wma'} "}, 400
+        
+        filename = str(user.id)+"/"+file.filename
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), f"{user.id}/" + file.filename)
+        os.system(f"mkdir -p files/{user.id}")
         file.save(filepath)
+        s3_path = s3_service.s3_upload_file(filepath, filename)
+        logger.info('TasksView', 'post', 'guardado en la ruta ' + s3_path + ' de s3')
 
         new_task = Task(
             user_id=user.id,
@@ -92,7 +95,8 @@ class TasksView(MethodView):
                 file.filename,
                 new_format,
                 datetime.now(),
-                ""
+                "",
+                s3_path
             ],
             kwargs={}
         )
@@ -184,6 +188,8 @@ class TaskView(MethodView):
         db.session.commit()
 
         user = User.query.filter_by(username=get_jwt_identity()).first()
+        s3_path = "files/"+str(user.id)+"/"+task.original_file_path
+        logger.info('TaskView', 'put', 'buscar en la ruta ' + s3_path + ' de s3')
 
         celery.send_task(
             'tasks.convert',
@@ -192,11 +198,11 @@ class TaskView(MethodView):
                 task.original_file_path,
                 new_format,
                 datetime.now(),
-                task.new_file_path
+                task.new_file_path,
+                s3_path
             ],
             kwargs={}
         )
-
         return {"mensaje": "Se ha actualizado la tarea", "id_task": task.id}
 
     @jwt_required()

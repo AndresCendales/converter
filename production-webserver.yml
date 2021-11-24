@@ -10,16 +10,14 @@ services:
       - FLASK_ENV=production
       - UPLOAD_FOLDER=/usr/src/app/files
       - APP_MODE=production
-      - CELERY_BROKER_URL=redis://172.31.88.145:6379/0
-      - CELERY_RESULT_BACKEND=redis://172.31.88.145:6379/0
+      - CELERY_BROKER_URL=redis://23.20.102.41:6379/0
+      - CELERY_RESULT_BACKEND=redis://23.20.102.41:6379/0
+      - AWS_ACCESS_KEY_ID=ASIAZLPHUOXOPNDKS4G6
+      - AWS_SECRET_ACCESS_KEY=nLsNz+Frp4AIVocrL8Ro3RwhTj0sTuMXp4UB0MLv
+      - AWS_SESSION_TOKEN=FwoGZXIvYXdzEHcaDLihefE8T4OOQDtpVCLMAbXO9ZmMSpg66tM14Gj6aaTBjY3YoPiEzcnZm8NRqnyboLPU2iVAQDxDBaYaSM9G2o8pLTCaaXILLh+Ra1jBkssFXd7ge1jsm31D8C6CABruWFKVUqXiukLM5YH2opyZ3tkz/NKd+QY+fcL0oIO1Kr5NN6tZA9PjQqt7biAXMzMY57FXBRvOx0l24qkubrurFIXs8pgxEQ3arHUQtBX9ygAaOqzV6vHuHpjukzDwNsKGXMWAJ2XT3ovzkHIhPKvDsRzLS57qscQ7mzm7MSi/wO6MBjItBctjPVPYKQ1cjdCmgvhwk5HSY69bYmXRTVmlJ51cwXgtdzfzaLRtfEKh4jn+
 
     ports:
       - "8080:8080"
-    volumes:
-      - .:/usr/src/app/
-      - type: bind
-        source: /nfs/converter_files
-        target: /usr/src/app/files
 
     restart: always
     entrypoint: ["./config/prod/entrypoint.sh"]
