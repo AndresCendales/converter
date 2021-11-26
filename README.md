@@ -39,20 +39,14 @@ docker-compose -f production-webserver.yml up --build # Start the webserver cont
 ```shell
 # Worker
 cd /usr/src/app/ #  Move to the path were the files are allocated
-docker-compose -f production-worker.yml up --build # Start the worker, broker container
+docker-compose -f prod-sqs-worker.yml up --build # Start the worker, broker container
 ```
 
-```shell
-# File Server
-cd /var/nfs/converter_files #  Move to the path were the files are allocated
-```
-There is no needed to run any container. The propouse of file server is to save all the files. 
-The given path is binded with the containers that run in the worker and webserver via NFS. 
 
 ## Test production
 For load testing we disable the slack notifications, please run the following command into the web server: 
 ```shell
 cd /usr/src/app/ #  Move to the path were the files are allocated
-docker-compose -f production-webserver.yml up -f production-webserver.test.yml -d --build # Start the webserver         
+docker-compose -f prod-sqs-worker.yml up -f production-webserver.test.yml -d --build # Start the webserver         
 ```
 The production-webserver.test.yml set the env variables into test mode app.

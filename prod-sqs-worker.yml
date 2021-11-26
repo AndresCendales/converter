@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  worker:
+    build:
+      context: .
+      dockerfile: worker_sqs/Dockerfile
+    environment:
+      PYTHONUNBUFFERED: 1
+      DSN: postgresql://app_usr:app_pwd_1234@converter-db.crrcdkkacufx.us-east-1.rds.amazonaws.com:5432/converter
+      NOTIFICATION_ENDPOINT: https://hooks.slack.com/services/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
+      LIMIT_PROCESSING_TEST: 600
+      AWS_ACCESS_KEY_ID: ASIAZLPHUOXOFV3EUPLG
+      AWS_SECRET_ACCESS_KEY: K3pm93cQ2w4ZuOoCA3qZHS9PJvAC8oetgnXhjPbT
+      AWS_SESSION_TOKEN: FwoGZXIvYXdzEMn//////////wEaDBR+utQnL7z8m4UGYyLMAQtoqIWeF0yOO8p3per0rztWLDmqcHoYS9h+TIhWhPkeQ2sIXkakhx5w9EO22cW345lFcS62m7n+D7+HzSCBCGyTjMDruEmLM+b7EpsCU3vf2wb8KEADEsXveC/e+prbedZZKfPZ0qMAyHEx3NOAAd8waEYmWoVOEy7A+Cg96cYq5Az8dJjoopygnZV9n2Ni31HI8AaIqJMKSvU4891NwWRv+n19YNZX8UhcVbV1AEfE8QTA4rXf71VQFccaCFeUPKarq23G+L6w4BFXHyjgr4CNBjItl7S2i9dB8egNbtymS9+gAr/K61hFW6Zrd2CVuCTe7aUEVSfwc7lkCnOdjU5U
+    volumes:
+      - type: bind
+        source: ./logs
+        target: /queue/logs
+      - type: bind
+        source: ./files
+        target: /queue/files

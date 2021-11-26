@@ -4,4 +4,3 @@ services:
   worker:
     environment:
       APP_MODE: TEST
-    

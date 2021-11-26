@@ -1,6 +1,9 @@
 # App
 from app import db
 
+# Aws
+from worker_sqs.send_messages import send_message, sqs
+
 # config
 from config import ALLOWED_EXTENSIONS
 
@@ -15,9 +18,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 # Models
 from api.tasks.models import Task, TaskSchema
 from api.auth.models import User
-
-# Workers
-from api.tasks.worker import celery
 
 # Validations
 from api.tasks.validate import allowed_file
@@ -88,17 +88,17 @@ class TasksView(MethodView):
         db.session.refresh(new_task)
         db.session.commit()
 
-        celery.send_task(
-            'tasks.convert',
-            args=[
-                user.id,
-                file.filename,
-                new_format,
-                datetime.now(),
-                "",
-                s3_path
-            ],
-            kwargs={}
+        send_message(
+            queue=sqs.get_queue_by_name(QueueName="conversiones"),
+            message_body=f"Nueva Tarea de actualizacion de formato del archivo {new_task.original_file_path} al formato {new_format}",
+            message_attributes={
+                "user_id": {'StringValue': str(user.id), 'DataType': 'String'},
+                "original_filename": {'StringValue': new_task.original_file_path, 'DataType': 'String'},
+                "new_format": {'StringValue': new_format, 'DataType': 'String'},
+                "created_at": {'StringValue': str(datetime.now()), 'DataType': 'String'},
+                "filename_to_delete": {'StringValue': " " + new_task.new_file_path, 'DataType': 'String'},
+                "s3_path": {'StringValue': s3_path, 'DataType': 'String'},
+            }
         )
 
         return {"message": "tarea creada satisfactoriamente.", "id_task": new_task.id}, 200
@@ -191,17 +191,17 @@ class TaskView(MethodView):
         s3_path = "files/"+str(user.id)+"/"+task.original_file_path
         logger.info('TaskView', 'put', 'buscar en la ruta ' + s3_path + ' de s3')
 
-        celery.send_task(
-            'tasks.convert',
-            args=[
-                user.id,
-                task.original_file_path,
-                new_format,
-                datetime.now(),
-                task.new_file_path,
-                s3_path
-            ],
-            kwargs={}
+        send_message(
+            queue=sqs.get_queue_by_name(QueueName="conversiones"),
+            message_body=f"Nueva Tarea de actualizacion de formato del archivo {task.original_file_path} al formato {new_format}",
+            message_attributes={
+                "user_id": {'StringValue': str(user.id), 'DataType': 'String'},
+                "original_filename": {'StringValue': task.original_file_path, 'DataType': 'String'},
+                "new_format": {'StringValue': new_format, 'DataType': 'String'},
+                "created_at": {'StringValue': str(datetime.now()), 'DataType': 'String'},
+                "filename_to_delete": {'StringValue': " " + task.new_file_path, 'DataType': 'String'},
+                "s3_path": {'StringValue': s3_path, 'DataType': 'String'},
+            }
         )
         return {"mensaje": "Se ha actualizado la tarea", "id_task": task.id}
 

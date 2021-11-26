@@ -18,14 +18,14 @@ from util.logger import Logger
 
 logger = Logger()
 
-celery = Celery(
+app = Celery(
     'tasks',
     broker=os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379'),
     backend=os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379')
 )
 
 
-@celery.task(name='tasks.convert')
+@app.task(name='tasks.convert')
 def convert(user_id, original_filename, new_format, created_at, filename_to_delete="", s3_path=""):
     """
     convert orchestra the conversion of file to new format
@@ -51,8 +51,8 @@ def convert(user_id, original_filename, new_format, created_at, filename_to_dele
     nfilename = str(user_id)+"/"+new_filename
     s3_path = s3_service.s3_upload_file(newFilepath, nfilename)
 
-    if filename_to_delete != "":
-        delete(user_id, filename_to_delete)
+    # if filename_to_delete != "":
+    #     delete(user_id, filename_to_delete)
 
     if os.getenv('APP_MODE') != "TEST":
         send_notification(
