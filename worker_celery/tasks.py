@@ -38,6 +38,8 @@ def convert(user_id, original_filename, new_format, created_at, filename_to_dele
     """
     created_at = datetime.fromisoformat(created_at)
     difference = datetime.now() - created_at
+
+    logger.info("Datetimes", "Times", f'created_at: {created_at} | now: {datetime.now()} | difference: {difference}')
     logger.info("ProccesViewer", 'see delta',
                     f"delta: {difference.total_seconds()} s")
     if difference.total_seconds() > int(os.getenv("LIMIT_PROCESSING_TEST", "600")):
