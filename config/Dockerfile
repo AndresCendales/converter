@@ -15,5 +15,7 @@ RUN pip install -r requirements.txt
 # Copy project
 COPY . /usr/src/app/
 
-EXPOSE 5000
+EXPOSE 80
+
+ENTRYPOINT ["config/local/entrypoint.sh"]
 

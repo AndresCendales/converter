@@ -70,9 +70,16 @@ class TasksView(MethodView):
         
         filename = str(user.id)+"/"+file.filename
         filepath = os.path.join(os.getenv("UPLOAD_FOLDER"), f"{user.id}/" + file.filename)
+
         os.system(f"mkdir -p files/{user.id}")
+        print("folder created")
+
         file.save(filepath)
+        print("file saved")
+
         s3_path = s3_service.s3_upload_file(filepath, filename)
+        print("file uploaded")
+
         logger.info('TasksView', 'post', 'guardado en la ruta ' + s3_path + ' de s3')
 
         new_task = Task(
@@ -87,6 +94,8 @@ class TasksView(MethodView):
         db.session.flush()
         db.session.refresh(new_task)
         db.session.commit()
+        print("task created")
+
 
         send_message(
             queue=sqs.get_queue_by_name(QueueName="conversiones"),
@@ -100,6 +109,7 @@ class TasksView(MethodView):
                 "s3_path": {'StringValue': s3_path, 'DataType': 'String'},
             }
         )
+        print("message sent")
 
         return {"message": "tarea creada satisfactoriamente.", "id_task": new_task.id}, 200
 

@@ -31,6 +31,7 @@ class LoginView(Resource):
             return {"message": "error with login."}, 400
 
         access_token = create_access_token(identity=user_by_name.username)
+        print("token createds")
         return {"message": "user logged", "access_token": access_token}, 200
 
 
@@ -51,7 +52,7 @@ class SignUpView(Resource):
         reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,}$"
         pat = re.compile(reg)
         mat = re.search(pat, data.get('password1').strip())
-        
+
         if not mat:
             return {"message": "user not created. password doesn't meet the security requirements."}, 400
 
