@@ -51,7 +51,7 @@ def convert(user_id, original_filename, new_format, created_at, filename_to_dele
     update_database_status(user_id, original_filename, new_filename)
     newFilepath = f"files/{user_id}/{new_filename}"
     nfilename = str(user_id)+"/"+new_filename
-    s3_path = s3_service.s3_upload_file(newFilepath, nfilename)
+    s3_path = s3_service.s3_upload_file(newFilepath, nfilename,"conversionaudiogrupo4")
 
     # if filename_to_delete != "":
     #     delete(user_id, filename_to_delete)

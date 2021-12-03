@@ -44,9 +44,9 @@ class TasksView(MethodView):
         :return:
         """
         user = User.query.filter_by(username=get_jwt_identity()).first()
-        
+
         file = request.files.get('fileName')
-        
+
         if file is None:
             return {"message": "Por favor adjunta el archivo que deseas convertir"}, 400
         if file.filename == '':
@@ -77,7 +77,7 @@ class TasksView(MethodView):
         file.save(filepath)
         print("file saved")
 
-        s3_path = s3_service.s3_upload_file(filepath, filename)
+        s3_path = s3_service.s3_upload_file(filepath, filename, "conversionaudiogrupo4")
         print("file uploaded")
 
         logger.info('TasksView', 'post', 'guardado en la ruta ' + s3_path + ' de s3')

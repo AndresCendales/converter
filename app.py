@@ -13,6 +13,8 @@ from api import db
 from api.auth.views import LoginView, SignUpView
 from api.tasks.views import TasksView, TaskView
 from api.files.views import FilesView
+from api.logs.views import LogsView
+
 
 def create_app():
     """Initialize the core application."""
@@ -39,6 +41,9 @@ def create_app():
 
         # Files
         api.add_resource(FilesView, '/api/files/<filename>', methods=['GET'])
+
+        # Logs
+        api.add_resource(LogsView, "/api/logs", methods=['POST'])
 
         # Migration
         migrate = Migrate(app, db)
