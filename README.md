@@ -28,6 +28,8 @@ There is no need to setup  any env variable, because there are declared in the d
 
 
 ### Deploy production
+
+#### AWS Deployment
 The deploy is running in aws in different ec2 machines.
 All the code related with the system is in the repository, but each machine runs differents containers:
 ```shell
@@ -41,6 +43,14 @@ docker-compose -f production-webserver.yml up --build # Start the webserver cont
 cd /usr/src/app/ #  Move to the path were the files are allocated
 docker-compose -f prod-sqs-worker.yml up --build # Start the worker, broker container
 ```
+
+#### Heroku Deployment
+Run the script named deploy-heroku.sh in the root of the project.
+```shell
+chmod +x ./deploy-heroku.sh
+./deploy-heroku.sh
+```
+
 
 
 ## Test production
